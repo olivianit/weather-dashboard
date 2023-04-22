@@ -8,3 +8,32 @@ const humidity = document.querySelector("#main-card-humidity");
 const date = document.querySelector(".date");
 let city = "";
 const searchList = document.querySelector("#results-div");
+
+
+searchBtn.addEventListener("click", function (event) {
+    event.preventDefault()
+    let city = search.value
+    getWeather(city);
+    localStorage.setItem("city", JSON.stringify(city));
+
+    function getWeather(city) {
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=` + city + `&appid=` + apiKey + `&units=imperial`)
+            .then((res) => {
+                return res.json()
+            })
+            .then((data) => {
+                console.log(data)
+                const today = new Date(data.dt * 1000)
+                const month = today.getMonth() + 1;
+                date.innerHTML = "(" + month + "/" + today.getDate() + "/" + today.getFullYear() + ")"
+                mainCard.innerHTML = data.name
+
+                const todaysPic = document.createElement("img")
+                const weatherPic = data.weather[0].icon
+                todaysPic.setAttribute("src", "https://openweathermap.org/img/wn/" + weatherPic + "@2x.png");
+                todaysPic.setAttribute("alt", data.weather[0].description);
+                mainCard.append(todaysPic)
+
+                temp.innerHTML = "Temp: " + Math.floor(data.main.temp) + ` &#176F`
+                wind.innerHTML = "Wind: " + Math.floor(data.wind.speed) + " mph"
+                humidity.innerHTML = " Humidity: " + Math.floor(data.main.humidity) + "%";
